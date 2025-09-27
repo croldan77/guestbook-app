@@ -32,22 +32,20 @@ docker-compose up -d
 1. **Build the image locally:**
 
 ```shell
-docker build -t chisporra77/guestbook-app:latest .
+docker build -t guestbook-app:v1.3.0 .
 ```
 
 2. **Tagging for Docker Hub:**
 
 ```shell
-docker tag guestbook-app:latest chisporra77/guestbook-app:latest
-docker tag guestbook-app:latest chisporra77/guestbook-app:v2.0.0
+docker tag guestbook-app:v1.3.0 chisporra77/guestbook-app:1.3.0
 ```
 
 3. **Login and push to Docker Hub:**
 
 ```shell
 docker login
-docker push chisporra77/guestbook-app:latest
-docker push chisporra77/guestbook-app:v2.0.0
+docker push chisporra77/guestbook-app:v1.3.0
 ```
 
 ## Multi-architecture (Apple Silicon/AMD64)
@@ -56,7 +54,7 @@ docker push chisporra77/guestbook-app:v2.0.0
 
 ```shell
 docker buildx create --use
-docker buildx build --platform linux/amd64,linux/arm64 -t chisporra77/guestbook-app:latest --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t chisporra77/guestbook-app:latestv.1.3.0 --push .
 ```
 
 # Using Kubernetes (Production)
@@ -108,9 +106,9 @@ curl -X POST http://guestbook.local/guestbook \
 
 # 📚 Project Structure
 
-* ```src/``` - Source Code of the Flask Application
-
 * ```docker/``` - Dockerfile and Docker Compose configuration
+
+* ```docker/src/``` - Source Code of the Flask Application
 
 * ```k8s-helm/``` - Helm chart for Kubernetes
 
