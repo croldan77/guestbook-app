@@ -1,0 +1,12 @@
+apiVersion: v2
+name: guestbook-app
+description: A Helm chart for Guestbook Flask Application
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: mysql
+    version: "9.16.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mysql.enabled

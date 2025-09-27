@@ -1,0 +1,49 @@
+# values.yaml
+replicaCount: 2
+
+image:
+  repository: chisporra77/guestbook-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: guestbook.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+mysql:
+  auth:
+    database: "guestbook_db"           # Name of the database to create
+    username: "guestbook_user"         # User to create
+    password: "943ruOu85D"             # User password
+    rootPassword: "u1xaxJsUfi"         # Root password
+    # createDatabase: true             # Optional: force creation (default value is usually true) :cite[2]
+    
+  # Additional initialization scripts (optional)
+  initdbScripts:
+    01-create-tables.sql: |
+      CREATE TABLE IF NOT EXISTS guestbook_db.entries (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(100) NOT NULL,
+          message TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      INSERT IGNORE INTO entries (name, message) VALUES 
+      ('System', 'Database initialized automatically');
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Guestbook App</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-container { background: #f5f5f5; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 3px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; }
+        .entry { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .author { font-weight: bold; color: #333; }
+        .date { color: #666; font-size: 0.9em; }
+        .message { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>📖 Guestbook</h1>
+    
+    <div class="form-container">
+        <h2>Leave your message</h2>
+        <form method="POST" action="/guestbook">
+            <input type="text" name="name" placeholder="Your name" required maxlength="100">
+            <textarea name="message" placeholder="Your message" rows="4" required></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <h2>Previous messages</h2>
+    {% if entries %}
+        {% for entry in entries %}
+        <div class="entry">
+            <div class="author">{{ entry.name }}</div>
+            <div class="message">{{ entry.message }}</div>
+            <div class="date">{{ entry.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No messages yet. Be the first to post one!</p>
+    {% endif %}
+</body>
+</html>
