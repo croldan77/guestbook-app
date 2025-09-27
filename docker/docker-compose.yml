@@ -2,7 +2,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "8080:5000"
     environment:
       - MYSQL_HOST=db
       - MYSQL_USER=guestbook_user
@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     volumes:
-      - .:/app
+      - ./src:/app
     restart: unless-stopped
 
   db:

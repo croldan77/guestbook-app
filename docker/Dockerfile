@@ -11,14 +11,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file and install Python dependencies
-COPY requirements.txt .
+COPY src/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application
-COPY . .
+COPY src/ ./
 
 # Expose port
 EXPOSE 5000
 
 # Command to run the application
-CMD ["python", "app_docker.py"]
+CMD ["python", "app.py"]
