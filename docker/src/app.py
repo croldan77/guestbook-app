@@ -44,7 +44,7 @@ def init_db():
                 )
             """)
             conn.commit()
-            print("✅ TTable 'entries' created/verified")
+            print("✅ Table 'entries' created/verified")
         except Error as e:
             print(f"❌ Error creating table: {e}")
         finally:

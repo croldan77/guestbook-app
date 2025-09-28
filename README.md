@@ -27,7 +27,7 @@ A fast web-based guestbook application built with Flask and MySQL, containerized
 git clone https://github.com/chispa77/guestbook-app.git
 cd guestbook-app/docker
 cp .env.example .env
-# Desplegar con variables de entorno
+# Deploy using environment variables
 export MYSQL_PASSWORD=[guestbook_user_password]
 export MYSQL_ROOT_PASSWORD=[root_password]
 docker-compose up -d
@@ -39,20 +39,20 @@ docker-compose up -d
 1. **Build the image locally:**
 
 ```shell
-docker build -t guestbook-app:v1.3.0 .
+docker build -t guestbook-app:1.5.0 .
 ```
 
 2. **Tagging for Docker Hub:**
 
 ```shell
-docker tag guestbook-app:v1.3.0 chisporra77/guestbook-app:1.3.0
+docker tag guestbook-app:1.5.0 chisporra77/guestbook-app:1.5.0
 ```
 
 3. **Login and push to Docker Hub:**
 
 ```shell
 docker login
-docker push chisporra77/guestbook-app:v1.3.0
+docker push chisporra77/guestbook-app:1.5.0
 ```
 
 ## Multi-architecture (Apple Silicon/AMD64)
@@ -61,7 +61,7 @@ docker push chisporra77/guestbook-app:v1.3.0
 
 ```shell
 docker buildx create --use
-docker buildx build --platform linux/amd64,linux/arm64 -t chisporra77/guestbook-app:latestv.1.3.0 --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t chisporra77/guestbook-app:1.5.0 --push .
 ```
 
 # Using Kubernetes (Production)
