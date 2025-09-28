@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-echo "🔓 Desencriptando secrets..."
+echo "🔓 Decrypting secrets..."
 sops --decrypt secrets.enc.yaml > .secrets-temp.yaml
 
-echo "📦 Ejecutando Helm upgrade..."
+echo "📦 Running Helm upgrade..."
 helm upgrade guestbook-release . \
     -n guestbook-app \
     --install \
@@ -12,7 +12,7 @@ helm upgrade guestbook-release . \
     -f values.yaml \
     -f .secrets-temp.yaml
 
-echo "🧹 Limpiando..."
+echo "🧹 Cleaning..."
 rm -f .secrets-temp.yaml
 
-echo "🎉 Listo!"
+echo "🎉 Ready!"

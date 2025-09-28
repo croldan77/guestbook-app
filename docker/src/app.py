@@ -7,7 +7,7 @@ import time
 app = Flask(__name__)
 
 def get_db_connection():
-    """Crea conexión a la base de datos con reintentos para Docker"""
+    """Create a database connection with retry mechanism for Docker"""
     max_retries = 5
     retry_delay = 5
     
@@ -19,18 +19,18 @@ def get_db_connection():
                 password=os.getenv('MYSQL_PASSWORD', ''),
                 database=os.getenv('MYSQL_DATABASE', 'guestbook_db')
             )
-            print("✅ Conexión a MySQL establecida")
+            print("✅ MySQL connection established")
             return connection
         except Error as e:
-            print(f"❌ Intento {attempt + 1}/{max_retries}: Error de conexión a MySQL: {e}")
+            print(f"❌ Attempt {attempt + 1}/{max_retries}: MySQL connection error: {e}")
             if attempt < max_retries - 1:
-                print(f"🕒 Reintentando en {retry_delay} segundos...")
+                print(f"🕒 Retrying in {retry_delay} seconds...")
                 time.sleep(retry_delay)
             else:
                 raise e
 
 def init_db():
-    """Crea la tabla si no existe"""
+    """Create the table if it does not exist"""
     conn = get_db_connection()
     if conn:
         try:
@@ -44,9 +44,9 @@ def init_db():
                 )
             """)
             conn.commit()
-            print("✅ Tabla 'entries' creada/verificada")
+            print("✅ TTable 'entries' created/verified")
         except Error as e:
-            print(f"❌ Error creando tabla: {e}")
+            print(f"❌ Error creating table: {e}")
         finally:
             if conn.is_connected():
                 cursor.close()
@@ -64,10 +64,10 @@ def handle_guestbook():
         return add_entry()
 
 def get_entries():
-    """Obtener todas las entradas"""
+    """Get all entries"""
     conn = get_db_connection()
     if not conn:
-        return jsonify({"error": "Error de base de datos"}), 500
+        return jsonify({"error": "Database error"}), 500
     
     try:
         cursor = conn.cursor(dictionary=True)
@@ -87,7 +87,7 @@ def get_entries():
             conn.close()
 
 def add_entry():
-    """Agregar nueva entrada"""
+    """Add new record"""
     if request.is_json:
         data = request.get_json()
         name = data.get('name', '').strip()
@@ -97,11 +97,11 @@ def add_entry():
         message = request.form.get('message', '').strip()
 
     if not name or not message:
-        return jsonify({"error": "Nombre y mensaje son requeridos"}), 400
+        return jsonify({"error": "Name and message are required"}), 400
     
     conn = get_db_connection()
     if not conn:
-        return jsonify({"error": "Error de base de datos"}), 500
+        return jsonify({"error": "Database error"}), 500
     
     try:
         cursor = conn.cursor()
@@ -112,7 +112,7 @@ def add_entry():
         conn.commit()
         
         if request.is_json:
-            return jsonify({"success": True, "message": "Entrada agregada"}), 201
+            return jsonify({"success": True, "message": "Record added"}), 201
         else:
             return redirect('/guestbook')
             
@@ -124,13 +124,13 @@ def add_entry():
             conn.close()
 
 if __name__ == '__main__':
-    print("🚀 Iniciando Guestbook App en Docker...")
-    print("🔍 Configuración:")
+    print("🚀 Starting Guestbook App...")
+    print("🔍 Configuration:")
     print(f"   MySQL Host: {os.getenv('MYSQL_HOST', 'localhost')}")
     print(f"   MySQL Database: {os.getenv('MYSQL_DATABASE', 'guestbook_db')}")
     
-    # Inicializar base de datos con reintentos
+    # Initialize database with retries
     init_db()
     
-    # Ejecutar aplicación
+    # Run application
     app.run(debug=True, host='0.0.0.0', port=5000)

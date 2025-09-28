@@ -1,8 +1,8 @@
 #!/bin/bash
-# edit-secrets.sh - Editar secrets encriptados
+# edit-secrets.sh - Edit encrypted secrets
 set -e
 
-echo "📝 Editando secrets encriptados..."
+echo "📝 Editing encrypted secrets..."
 sops secrets.enc.yaml
 
-echo "✅ Editado completado. El archivo se guardó encriptado automáticamente."
+echo "✅ Editing completed. The file was automatically saved in encrypted format.."

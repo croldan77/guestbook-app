@@ -9,7 +9,11 @@ A fast web-based guestbook application built with Flask and MySQL, containerized
 - ✅ Containerized with Docker
 - ✅ Deployed on Kubernetes using Helm
 - ✅ Nginx Ingress for routing
-- ✅ GitOps-ready configuration
+- ✅ GitOps-ready configuration (In Progress)
+
+## Architecture
+
+![Architecture](docs/images/Architecture.png)
 
 ## 🏗️ Flowchart
 
@@ -143,6 +147,88 @@ curl -X POST http://guestbook.local/guestbook \
 -H "Content-Type: application/json" \
 -d '{"name":"Chris", "message":"Testing the API!"}'
 ```
+# 🔧 Useful commands
+
+### View resources
+
+```shell
+# View pods in all namespaces
+kubectl get pods -A
+kubectl get pods --all-namespaces
+
+# View pods in a specific namespace
+kubectl get pods -n guestbook-app
+
+# View multiple types of resources
+kubectl get pods,svc,deploy -n guestbook-app
+
+# View everything in one namespace
+kubectl get all -n guestbook-app
+```
+
+### Detailed information
+
+```shell
+# Detailed description of a pod
+kubectl describe pod nombre-pod -n guestbook-app
+
+# View logs of a pod
+kubectl logs nombre-pod -n guestbook-app
+kubectl logs -f nombre-pod -n guestbook-app  # follow (Real Time)
+
+# View logs for a deployment
+kubectl logs deploy/nombre-deployment -n guestbook-app
+```
+
+### Services & Networking
+
+```shell
+# View services
+kubectl get services -A
+kubectl get svc -n guestbook-app
+
+# Port forwarding to access services
+kubectl port-forward pod/nombre-pod -n guestbook-app 5000:80
+kubectl port-forward pod/mysql-pod -n guestbook-app 3306:3306
+#kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# View endpoints
+kubectl get endpoints -n argocd
+```
+
+### Configmap & Secrets
+
+```shell
+# View secrets
+kubectl get secrets -n guestbook-app
+kubectl describe secret nombre-secret -n guestbook-app
+
+# View configmaps
+kubectl get configmaps -n guestbook-app
+kubectl describe configmap nombre-cm -n guestbook-app
+```
+
+### TROUBLESHOOTING COMMANDS
+
+```shell
+
+```
+
+# 🔧 Tech Stack
+
+* **Backend:** Python 3.9 + Flask
+
+* **Database:** MySQL 8.0
+
+* **Containerization:** Docker
+
+* **Orchestration:** Kubernetes
+
+* **Package Management:** Helm
+
+* **Reverse Proxy:** Nginx Ingress
+
+* **Secrets Management:** SOPS + PGP
 
 # 📚 Project Structure
 
@@ -156,19 +242,6 @@ curl -X POST http://guestbook.local/guestbook \
 
 * ```scripts/``` - Testing scripts
 
-# 🔧 Tech Stack
-
-* **Backend:** Python, Flask
-
-* **Database:** MySQL 8.0
-
-* **Containerization:** Docker
-
-* **Orchestration:** Kubernetes
-
-* **Package Management:** Helm
-
-* **Reverse Proxy:** Nginx Ingress
 
 👨‍💻 Autor
 [Christian Roldan] - [christian_roldan@hotmail.com]

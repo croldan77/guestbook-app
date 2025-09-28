@@ -1,5 +1,5 @@
 -- init.sql
--- Script de inicialización para MySQL en Docker
+-- Initialization script for MySQL in Docker
 
 CREATE DATABASE IF NOT EXISTS guestbook_db;
 USE guestbook_db;
