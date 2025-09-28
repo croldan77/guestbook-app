@@ -211,7 +211,20 @@ kubectl describe configmap nombre-cm -n guestbook-app
 ### TROUBLESHOOTING COMMANDS
 
 ```shell
+# Running commands inside a pod
+kubectl exec -it nombre-pod -n guestbook-app -- /bin/bash
 
+# View events (very useful for debugging)
+kubectl get events -n guestbook-app --sort-by=.metadata.creationTimestamp
+kubectl get events -A --sort-by=.metadata.creationTimestamp
+
+# View resources with wide output
+kubectl get pods -n guestbook-app -o wide
+kubectl get nodes -o wide
+
+# View cluster information
+kubectl cluster-info
+kubectl version
 ```
 
 # 🔧 Tech Stack
