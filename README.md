@@ -23,6 +23,9 @@ A fast web-based guestbook application built with Flask and MySQL, containerized
 git clone https://github.com/chispa77/guestbook-app.git
 cd guestbook-app/docker
 cp .env.example .env
+# Desplegar con variables de entorno
+export MYSQL_PASSWORD=[guestbook_user_password]
+export MYSQL_ROOT_PASSWORD=[root_password]
 docker-compose up -d
 ```
 ## 🐳 Docker Image Management
@@ -67,16 +70,53 @@ doctl auth init -t
 doctl kubernetes cluster kubeconfig save 9e15da88-8f51-4aca-b99a-4075e8bcd281
 ```
 
-2. **Deploy app in K8s-interview-01 Cluster**
+2. **Dependencies**
+
+```shell
+# Create a PGP key pair
+export KEY_NAME="Your name"
+export KEY_COMMENT="Key for helm-secrets"
+
+gpg --batch --full-generate-key <<EOF
+%no-protection
+Key-Type: 1
+Key-Length: 4096
+Subkey-Type: 1
+Subkey-Length: 4096
+Expire-Date: 0
+Name-Comment: ${KEY_COMMENT}
+Name-Real: ${KEY_NAME}
+EOF
+```
+
+```shell
+# Obtain the fingerprint of the public key, which you will need to configure SOPS
+gpg --list-secret-keys "${KEY_NAME}"
+```
+
+```yaml
+# .sops.yaml
+creation_rules:
+  - pgp: >-
+      BE574406FE117762E9F4C8B01CB98A820DCBA0FC  # Replace with your fingerprint
+```
+
+### Note: To edit secrets you can use this script
+
+```shell
+./edit-secrets.sh
+```
+
+3. **Deploy app in K8s-interview-01 Cluster**
 
 ```shell
 # Install Helm chart
 git clone https://github.com/chispa77/guestbook-app.git
 cd guestbook-app/k8s-helm
-helm install guestbook-release -f values.yaml -n guestbook-app --create-namespace 
+./deploy.sh 
 ```
 
-3. **Access the Application**
+4. **Access the Application**
 
 ```shell
 # Get the IP address of the Ingress

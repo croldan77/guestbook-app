@@ -14,27 +14,36 @@ spec:
       labels:
         {{- include "guestbook-app.selectorLabels" . | nindent 8 }}
     spec:
-{{- if .Values.initContainers.enabled }}
+      {{- if .Values.initContainers.enabled }}
       initContainers:
-      - name: wait-for-mysql
+      - name: wait-for-mysql-ready
         image: {{ .Values.initContainers.mysql.image }}
         command:
         - 'sh'
         - '-c'
         - |
-          echo "Esperando a que MySQL esté completamente listo..."
-          until mysql -h {{ .Release.Name }}-mysql -u {{ .Values.mysql.auth.username }} -p{{ .Values.mysql.auth.password }} -e "SELECT 1;" {{ .Values.mysql.auth.database }}; do
-            echo "MySQL no está listo aún. Reintentando en {{ .Values.initContainers.mysql.checkInterval }} segundos..."
+          echo "Waiting for MySQL to be fully ready..."
+          # Read the password from the environment variable
+          until mysql -h {{ .Release.Name }}-mysql -u {{ .Values.mysql.auth.username }} -p"$MYSQL_PASSWORD" -e "SELECT 1;" {{ .Values.mysql.auth.database }}; do
+            echo "MySQL is not ready yet. Retrying in... {{ .Values.initContainers.mysql.checkInterval }} seconds..."
             sleep {{ .Values.initContainers.mysql.checkInterval }};
           done
-          echo "✅ MySQL está completamente inicializado y aceptando conexiones" 
-{{- end }}      
+          echo "✅ MySQL is fully initialized and accepting connections."
+        env:
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mysql
+                key: mysql-password
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 5000
+            - name: http
+              containerPort: 5000
+              protocol: TCP
           env:
             - name: MYSQL_HOST
               value: "{{ .Release.Name }}-mysql"

@@ -1,0 +1,4 @@
+# .sops.yaml
+creation_rules:
+  - pgp: >-
+      5A1B3795E9326F34A7FA7A6A058CF58AFF0D9127

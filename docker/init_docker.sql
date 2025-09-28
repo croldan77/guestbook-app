@@ -5,7 +5,7 @@ CREATE DATABASE IF NOT EXISTS guestbook_db;
 USE guestbook_db;
 
 -- Create a specific user account for the guestbook application
-CREATE USER 'guestbook_user'@'localhost' IDENTIFIED BY '943ruOu85D';
+CREATE USER 'guestbook_user'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';
 
 -- Create the database if it does not exist
 CREATE DATABASE IF NOT EXISTS guestbook_db;
