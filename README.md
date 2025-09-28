@@ -73,7 +73,7 @@ doctl kubernetes cluster kubeconfig save 9e15da88-8f51-4aca-b99a-4075e8bcd281
 # Install Helm chart
 git clone https://github.com/chispa77/guestbook-app.git
 cd guestbook-app/k8s-helm
-helm install guestbook-release -n guestbook-app --create-namespace
+helm install guestbook-release -f values.yaml -n guestbook-app --create-namespace 
 ```
 
 3. **Access the Application**

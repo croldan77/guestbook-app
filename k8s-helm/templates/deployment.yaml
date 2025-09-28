@@ -14,6 +14,21 @@ spec:
       labels:
         {{- include "guestbook-app.selectorLabels" . | nindent 8 }}
     spec:
+{{- if .Values.initContainers.enabled }}
+      initContainers:
+      - name: wait-for-mysql
+        image: {{ .Values.initContainers.mysql.image }}
+        command:
+        - 'sh'
+        - '-c'
+        - |
+          echo "Esperando a que MySQL esté completamente listo..."
+          until mysql -h {{ .Release.Name }}-mysql -u {{ .Values.mysql.auth.username }} -p{{ .Values.mysql.auth.password }} -e "SELECT 1;" {{ .Values.mysql.auth.database }}; do
+            echo "MySQL no está listo aún. Reintentando en {{ .Values.initContainers.mysql.checkInterval }} segundos..."
+            sleep {{ .Values.initContainers.mysql.checkInterval }};
+          done
+          echo "✅ MySQL está completamente inicializado y aceptando conexiones" 
+{{- end }}      
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -32,5 +47,23 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-mysql
                   key: mysql-password
+          {{- if .Values.probes.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.probes.readiness.port }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.probes.liveness.port }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
