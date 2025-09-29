@@ -227,6 +227,125 @@ kubectl cluster-info
 kubectl version
 ```
 
+# 🔧 ArgoCD 
+
+## Installation
+
+1. **Add the ArgoCD Helm repository**
+
+```shell
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+```
+
+2. **Create values.yaml to deploy**
+
+```shell
+#values.yaml
+argo-cd:
+  dex:
+    enabled: false
+  notifications:
+    enabled: false
+  applicationSet:
+    enabled: false
+```
+
+3. **Deploy with Helm**
+
+```shell
+helm install argocd argo/argo-cd -n argocd -f values.yaml
+```
+
+4. **Verify the installation**
+
+```shell
+croldan@MacBook-Pro-de-Christian argocd % kubectl get pods -n argocd
+NAME                                                READY   STATUS    RESTARTS   AGE
+argocd-application-controller-0                     1/1     Running   0          13h
+argocd-applicationset-controller-5db85947b6-6h6bw   1/1     Running   0          13h
+argocd-dex-server-6cfb7cd549-wgh2r                  1/1     Running   0          13h
+argocd-notifications-controller-996df4b4-wcjsl      1/1     Running   0          13h
+argocd-redis-d7668b484-vjwmt                        1/1     Running   0          13h
+argocd-repo-server-5bc9b4486c-xgjmx                 1/1     Running   0          13h
+argocd-server-65869f554b-dr8kb                      1/1     Running   0          13h
+croldan@MacBook-Pro-de-Christian argocd %
+```
+
+5. **Port-forwarding**
+
+```shell
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+5. **Get initial password**
+
+```shell
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
+```
+5. **Login**
+
+```shell
+User: admin
+Password:[initial password]
+```
+
+![Login](docs/images/login.png)
+
+6. **ArgoCD CLI installation**
+
+```shell
+brew install argocd
+```
+
+### Useful commands
+
+```shell
+argocd login <server> → connect to the ArgoCD server
+argocd app list → list applications
+argocd app sync <app> → syn applications
+argocd app diff <app> → view the differences between Git and cluster
+argocd logout → logout
+```
+## ArgoCD APP Configuration
+
+1. **Create guestbook-application.yaml to deploy**
+
+```shell
+#guestbook-application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/croldan77/guestbook-app
+    targetRevision: HEAD
+    path: k8s-helm/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook-app
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+```
+2. **Deploy and validate application in ArgoCD**
+
+```shell
+kubectl apply -f guestbook-application.yaml
+kubectl get app -n argocd
+kubectl describe app guestbook-app -n argocd
+
+argocd app list
+argocd app get guestbook-app
+```
+
+
 # 🔧 Tech Stack
 
 * **Backend:** Python 3.9 + Flask
