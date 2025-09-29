@@ -1,5 +1,5 @@
 # values.yaml
-replicaCount: 4
+replicaCount: 3
 
 image:
   repository: chisporra77/guestbook-app
