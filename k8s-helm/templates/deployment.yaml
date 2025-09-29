@@ -18,23 +18,31 @@ spec:
       initContainers:
       - name: wait-for-mysql-ready
         image: {{ .Values.initContainers.mysql.image }}
+        env:
+          - name: MYSQL_HOST
+            value: "{{ .Release.Name }}-mysql"
+          - name: MYSQL_USER
+            value: "{{ .Values.mysql.auth.username }}"
+          - name: MYSQL_DATABASE
+            value: "{{ .Values.mysql.auth.database }}"
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mysql
+                key: mysql-password
+          - name: CHECK_INTERVAL
+            value: "{{ .Values.initContainers.mysql.checkInterval }}"
         command:
         - 'sh'
         - '-c'
         - |
           echo "Waiting for MySQL to be fully ready..."
           # Read the password from the environment variable
-          until mysql -h {{ .Release.Name }}-mysql -u {{ .Values.mysql.auth.username }} -p"$MYSQL_PASSWORD" -e "SELECT 1;" {{ .Values.mysql.auth.database }}; do
-            echo "MySQL is not ready yet. Retrying in... {{ .Values.initContainers.mysql.checkInterval }} seconds..."
-            sleep {{ .Values.initContainers.mysql.checkInterval }};
+          until mysql -h $MYSQL_HOST -u $MYSQL_USER -p"$MYSQL_PASSWORD" -e "SELECT 1;" $MYSQL_DATABASE; do
+            echo "MySQL is not ready yet. Retrying in... $CHECK_INTERVAL seconds..."
+            sleep $CHECK_INTERVAL;
           done
           echo "✅ MySQL is fully initialized and accepting connections."
-        env:
-          - name: MYSQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}-mysql
-                key: mysql-password
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
